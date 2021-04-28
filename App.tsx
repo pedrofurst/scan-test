@@ -20,6 +20,7 @@ import {
   View,
   StyleProp,
   TextStyle,
+  NativeEventEmitter,
 } from 'react-native';
 import {CheckBox, Button} from 'react-native-elements';
 
@@ -30,6 +31,7 @@ type ScanType = {
 };
 
 const App = () => {
+  const [eventEmitter] = useState(new NativeEventEmitter());
   const [scans, setScans] = useState<ScanType[]>([]);
   const [dwVersionText, setDwVersionText] = useState<string>(
     'Pre 6.3.  Please create and configure profile manually.  See the ReadMe for more details',
@@ -270,14 +272,11 @@ const App = () => {
   };
 
   useEffect(() => {
-    DeviceEventEmitter.addListener(
-      'datawedge_broadcast_intent',
-      broadcastReceiver,
-    );
+    eventEmitter.addListener('datawedge_broadcast_intent', broadcastReceiver);
     registerBroadcastReceiver();
     determineVersion();
     return () =>
-      DeviceEventEmitter.removeListener(
+      eventEmitter.removeListener(
         'datawedge_broadcast_intent',
         broadcastReceiver,
       );
