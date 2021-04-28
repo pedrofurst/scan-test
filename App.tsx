@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /**
  * Sample React Native App
  * https://github.com/facebook/react-native
@@ -8,23 +9,19 @@
  * @format
  */
 
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import DataWedgeIntents from 'react-native-datawedge-intents';
 import {
   DeviceEventEmitter,
   FlatList,
-  SafeAreaView,
   StyleSheet,
   Text,
   TouchableHighlight,
-  useColorScheme,
   View,
   StyleProp,
   TextStyle,
 } from 'react-native';
 import {CheckBox, Button} from 'react-native-elements';
-
-import {Colors} from 'react-native/Libraries/NewAppScreen';
 
 type ScanType = {
   data: string;
@@ -59,34 +56,26 @@ const App = () => {
   const [code39checked, setCode39checked] = useState<boolean>(true);
   const [code128checked, setCode128checked] = useState<boolean>(true);
 
-  const isDarkMode = useColorScheme() === 'dark';
   const [scanButtonVisible, setScanButtonVisible] = useState<boolean>(false);
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
 
   const [dwVersionTextStyle, setDwVersionTextStyle] = useState<
     StyleProp<TextStyle>
   >(styles.itemTextAttention);
 
-  const sendCommand = useCallback(
-    (extraName, extraValue) => {
-      console.log(
-        'Sending Command: ' + extraName + ', ' + JSON.stringify(extraValue),
-      );
-      const broadcastExtras: any = {};
-      broadcastExtras[extraName] = extraValue;
-      broadcastExtras.SEND_RESULT = sendCommandResult;
-      DataWedgeIntents.sendBroadcastWithExtras({
-        action: 'com.symbol.datawedge.api.ACTION',
-        extras: broadcastExtras,
-      });
-    },
-    [sendCommandResult],
-  );
+  const sendCommand = (extraName: any, extraValue: any) => {
+    console.log(
+      'Sending Command: ' + extraName + ', ' + JSON.stringify(extraValue),
+    );
+    const broadcastExtras: any = {};
+    broadcastExtras[extraName] = extraValue;
+    broadcastExtras.SEND_RESULT = sendCommandResult;
+    DataWedgeIntents.sendBroadcastWithExtras({
+      action: 'com.symbol.datawedge.api.ACTION',
+      extras: broadcastExtras,
+    });
+  };
 
-  const datawedge63 = useCallback(() => {
+  const datawedge63 = () => {
     console.log('Datawedge 6.3 APIs are available');
     //  Create a profile for our application
     sendCommand(
@@ -106,9 +95,9 @@ const App = () => {
 
     //  Functionality of the scan button is available
     setScanButtonVisible(true);
-  }, [sendCommand]);
+  };
 
-  const datawedge64 = useCallback(() => {
+  const datawedge64 = () => {
     console.log('Datawedge 6.4 APIs are available');
 
     //  Documentation states the ability to set a profile config is only available from DW 6.4.
@@ -160,9 +149,9 @@ const App = () => {
     setTimeout(() => {
       sendCommand('com.symbol.datawedge.api.GET_ACTIVE_PROFILE', '');
     }, 1000);
-  }, [sendCommand]);
+  };
 
-  const datawedge65 = useCallback(() => {
+  const datawedge65 = () => {
     console.log('Datawedge 6.5 APIs are available');
 
     setDwVersionText('6.5 or higher.');
@@ -170,9 +159,9 @@ const App = () => {
     //  Instruct the API to send
     setSendCommandResult('true');
     setLastApiVisible(true);
-  }, []);
+  };
 
-  const enumerateScanners = useCallback(enumeratedScanners => {
+  const enumerateScanners = (enumeratedScanners: any) => {
     let humanReadableScannerList = '';
     for (let i = 0; i < enumeratedScanners.length; i++) {
       console.log(
@@ -187,101 +176,86 @@ const App = () => {
       if (i < enumeratedScanners.length - 1) humanReadableScannerList += ', ';
     }
     setEnumeratedScannersText(humanReadableScannerList);
-  }, []);
+  };
 
-  const activeProfile = useCallback(theActiveProfile => {
+  const activeProfile = (theActiveProfile: string) => {
     setActiveProfileText(theActiveProfile);
     // this.setState(this.state);
-  }, []);
+  };
 
-  const barcodeScanned = useCallback(
-    (scanData, timeOfScan) => {
-      const scannedData = scanData['com.symbol.datawedge.data_string'];
-      const scannedType = scanData['com.symbol.datawedge.label_type'];
-      console.log('Scan: ' + scannedData);
-      const newScans = [...scans];
-      newScans.unshift({
-        data: scannedData,
-        decoder: scannedType,
-        timeAtDecode: timeOfScan,
-      });
-      setScans(newScans);
-    },
-    [scans],
-  );
+  const barcodeScanned = (scanData: any, timeOfScan: any) => {
+    const scannedData = scanData['com.symbol.datawedge.data_string'];
+    const scannedType = scanData['com.symbol.datawedge.label_type'];
+    console.log('Scan: ' + scannedData);
+    const newScans = [...scans];
+    newScans.unshift({
+      data: scannedData,
+      decoder: scannedType,
+      timeAtDecode: timeOfScan,
+    });
+    setScans(newScans);
+  };
 
-  const broadcastReceiver = useCallback(
-    intent => {
-      //  Broadcast received
-      console.log('Received Intent: ' + JSON.stringify(intent));
-      if (intent.hasOwnProperty('RESULT_INFO')) {
-        const commandResult =
-          intent.RESULT +
-          ' (' +
-          intent.COMMAND.substring(
-            intent.COMMAND.lastIndexOf('.') + 1,
-            intent.COMMAND.length,
-          ) +
-          ')'; // + JSON.stringify(intent.RESULT_INFO);
-        setLastApiText(commandResult.toLowerCase());
-      }
+  const broadcastReceiver = (intent: any) => {
+    //  Broadcast received
+    console.log('Received Intent: ' + JSON.stringify(intent));
+    if (intent.hasOwnProperty('RESULT_INFO')) {
+      const commandResult =
+        intent.RESULT +
+        ' (' +
+        intent.COMMAND.substring(
+          intent.COMMAND.lastIndexOf('.') + 1,
+          intent.COMMAND.length,
+        ) +
+        ')'; // + JSON.stringify(intent.RESULT_INFO);
+      setLastApiText(commandResult.toLowerCase());
+    }
 
-      if (
-        intent.hasOwnProperty(
-          'com.symbol.datawedge.api.RESULT_GET_VERSION_INFO',
-        )
-      ) {
-        //  The version has been returned (DW 6.3 or higher).  Includes the DW version along with other subsystem versions e.g MX
-        const versionInfo =
-          intent['com.symbol.datawedge.api.RESULT_GET_VERSION_INFO'];
-        console.log('Version Info: ' + JSON.stringify(versionInfo));
-        const datawedgeVersion = versionInfo['DATAWEDGE'];
-        console.log('Datawedge version: ' + datawedgeVersion);
+    if (
+      intent.hasOwnProperty('com.symbol.datawedge.api.RESULT_GET_VERSION_INFO')
+    ) {
+      //  The version has been returned (DW 6.3 or higher).  Includes the DW version along with other subsystem versions e.g MX
+      const versionInfo =
+        intent['com.symbol.datawedge.api.RESULT_GET_VERSION_INFO'];
+      console.log('Version Info: ' + JSON.stringify(versionInfo));
+      const datawedgeVersion = versionInfo['DATAWEDGE'];
+      console.log('Datawedge version: ' + datawedgeVersion);
 
-        //  Fire events sequentially so the application can gracefully degrade the functionality available on earlier DW versions
-        if (datawedgeVersion >= '6.3') datawedge63();
-        if (datawedgeVersion >= '6.4') datawedge64();
-        if (datawedgeVersion >= '6.5') datawedge65();
+      //  Fire events sequentially so the application can gracefully degrade the functionality available on earlier DW versions
+      if (datawedgeVersion >= '6.3') datawedge63();
+      if (datawedgeVersion >= '6.4') datawedge64();
+      if (datawedgeVersion >= '6.5') datawedge65();
 
-        //this.setState(this.state);
-      } else if (
-        intent.hasOwnProperty(
-          'com.symbol.datawedge.api.RESULT_ENUMERATE_SCANNERS',
-        )
-      ) {
-        //  Return from our request to enumerate the available scanners
-        const enumeratedScannersObj =
-          intent['com.symbol.datawedge.api.RESULT_ENUMERATE_SCANNERS'];
-        enumerateScanners(enumeratedScannersObj);
-      } else if (
-        intent.hasOwnProperty(
-          'com.symbol.datawedge.api.RESULT_GET_ACTIVE_PROFILE',
-        )
-      ) {
-        //  Return from our request to obtain the active profile
-        const activeProfileObj =
-          intent['com.symbol.datawedge.api.RESULT_GET_ACTIVE_PROFILE'];
-        activeProfile(activeProfileObj);
-      } else if (!intent.hasOwnProperty('RESULT_INFO')) {
-        //  A barcode has been scanned
-        barcodeScanned(intent, new Date().toLocaleString());
-      }
-    },
-    [
-      activeProfile,
-      barcodeScanned,
-      datawedge63,
-      datawedge64,
-      datawedge65,
-      enumerateScanners,
-    ],
-  );
+      //this.setState(this.state);
+    } else if (
+      intent.hasOwnProperty(
+        'com.symbol.datawedge.api.RESULT_ENUMERATE_SCANNERS',
+      )
+    ) {
+      //  Return from our request to enumerate the available scanners
+      const enumeratedScannersObj =
+        intent['com.symbol.datawedge.api.RESULT_ENUMERATE_SCANNERS'];
+      enumerateScanners(enumeratedScannersObj);
+    } else if (
+      intent.hasOwnProperty(
+        'com.symbol.datawedge.api.RESULT_GET_ACTIVE_PROFILE',
+      )
+    ) {
+      //  Return from our request to obtain the active profile
+      const activeProfileObj =
+        intent['com.symbol.datawedge.api.RESULT_GET_ACTIVE_PROFILE'];
+      activeProfile(activeProfileObj);
+    } else if (!intent.hasOwnProperty('RESULT_INFO')) {
+      //  A barcode has been scanned
+      barcodeScanned(intent, new Date().toLocaleString());
+    }
+  };
 
   //   useEffect(() => {
   //     DeviceEventEmitter.addListener('datawedge_broadcast_intent', broadcastReceiver})
   //   }, []);
 
-  const registerBroadcastReceiver = useCallback(() => {
+  const registerBroadcastReceiver = () => {
     DataWedgeIntents.registerBroadcastReceiver({
       filterActions: [
         'com.zebra.reactnativedemo.ACTION',
@@ -289,11 +263,11 @@ const App = () => {
       ],
       filterCategories: ['android.intent.category.DEFAULT'],
     });
-  }, []);
+  };
 
-  const determineVersion = useCallback(() => {
+  const determineVersion = () => {
     sendCommand('com.symbol.datawedge.api.GET_VERSION_INFO', '');
-  }, [sendCommand]);
+  };
 
   useEffect(() => {
     DeviceEventEmitter.addListener(
@@ -309,7 +283,7 @@ const App = () => {
       );
   }, [broadcastReceiver, determineVersion, registerBroadcastReceiver]);
 
-  const setDecoders = useCallback(() => {
+  const setDecoders = () => {
     //  Set the new configuration
     const profileConfig = {
       PROFILE_NAME: 'ZebraReactNativeDemo',
@@ -327,14 +301,14 @@ const App = () => {
       },
     };
     sendCommand('com.symbol.datawedge.api.SET_CONFIG', profileConfig);
-  }, [code128checked, code39checked, ean13checked, ean8checked, sendCommand]);
+  };
 
-  const _onPressScanButton = useCallback(() => {
+  const _onPressScanButton = () => {
     sendCommand(
       'com.symbol.datawedge.api.SOFT_SCAN_TRIGGER',
       'TOGGLE_SCANNING',
     );
-  }, [sendCommand]);
+  };
 
   return (
     <View style={{flex: 1, backgroundColor: 'red', flexGrow: 1}}>
